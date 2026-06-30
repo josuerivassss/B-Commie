@@ -54,7 +54,6 @@ class Greetings(commands.Cog):
     
     @commands.cooldown(1, 30, commands.BucketType.guild)
     @commands.has_permissions(manage_guild=True)
-    @discord.app_commands.describe(enabled="Whether to enable or disable welcome messages")
     @welcome.command(name="channel")
     async def welcome_channel(self, ctx: CommieContext, channel: discord.TextChannel):
         """Sets the welcome message channel"""
@@ -69,7 +68,6 @@ class Greetings(commands.Cog):
     
     @commands.cooldown(1, 30, commands.BucketType.guild)
     @commands.has_permissions(manage_guild=True)
-    @discord.app_commands.describe(enabled="Whether to enable or disable welcome messages")
     @welcome.command(name="message")
     async def welcome_message(self, ctx: CommieContext, *, message: str):
         """Sets the welcome message. Use {user} to mention the new member."""
