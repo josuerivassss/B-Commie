@@ -20,7 +20,7 @@ This class is intended to live inside the core UI layer.
 """
 
 from typing import Callable, Any
-from core.kernel import KitContext, Locale
+from core.kernel import CommieContext, Locale
 import discord
 
 
@@ -29,7 +29,7 @@ class Paginator(discord.ui.View):
         self,
         *,
         data: list[Any],
-        ctx: KitContext,
+        ctx: CommieContext,
         locale: Locale,
         embed: discord.Embed | None = None,
         render: Callable[[Any, int, int], None] | None = None,

@@ -61,7 +61,8 @@
         "example": "Example",
         "category": "Category",
         "usage": "Usage",
-        "noDescription": "No description available."
+        "noDescription": "No description available.",
+        "notFound": "No command or module found with the name '{query}'."
     },
     "tags": {
         "tagCreated": "Tag `{name}` created successfully!",
@@ -98,6 +99,7 @@
         "messagesCleared": "**{count}** messages have been cleared in {channel}!"
     },
     "errors": {
+        "unauthorized": "You don't have authorization to execute this action.",
         "noIcon": "This server has no icon.",
         "noBanner": "This server has no banner.",
         "notInfo": "No information available about this.",
@@ -105,6 +107,7 @@
         "emojiLimitReached": "The emoji limit has been reached for this server.",
         "noImageResults": "No image results found.",
         "invalidLanguage": "The specified language is not supported.",
+        "invalidLanguageHint": "Use **`/languageslist`** to see the available languages.",
         "internalError": "An internal error occurred.",
         "prefixTooLong": "The prefix is too long. Please choose a prefix with less than {max} characters.",
         "onCooldown": "This command is on cooldown.",
@@ -172,5 +175,61 @@
         "clearAmountInvalid": "The amount of messages to clear is invalid.",
         "clearAmountInvalidHint": "Must be between 1 and 100",
         "userNotBanned": "This user is not banned."
+    }, 
+    "reminders": {
+        "add": {
+            "success": "A reminder for {date} ({relative}) has been set successfully!",
+            "when_field": "📅 When",
+            "message_field": "💬 Message",
+            "channel_field": "📍 Channel",
+            "invalid_time": "Invalid time format\nValid examples:\n• Relative: `30s`, `30m`, `2h`, `1d`, `1w`, `1mo`, `1y`\n• Combined: `1d12h`, `2w3d`\n• Absolute: `2025-02-10 15:30`, `15:30`",
+            "message_too_long": "The message cannot exceed 500 characters",
+            "future_only": "The time must be in the future",
+            "limit_reached": "You have reached the maximum number of reminders (10). Please delete some before adding new ones.",
+            "no_permissions": "I don't have permission to send messages in {channel}. Please choose a different channel or grant me the necessary permissions."
+        },
+        "list": {
+            "title": "Your reminders",
+            "empty": "You have dont have any reminders",
+            "when": "When",
+            "channel": "Channel",
+            "message": "Message",
+            "deleted_channel": "*Deleted channel*",
+            "no_message": "*No message*",
+            "footer_more": "Showing {shown} of {total}",
+            "footer_total": "Total: {total} reminder(s)"
+        },
+        "remove": {
+            "success": "The reminder has been removed successfully!",
+            "not_found": "The reminder with ID `{id}` was not found.",
+            "invalid_id": "The provided ID is invalid. Please provide a valid reminder ID.",
+            "not_owner": "You can't remove a reminder that you don't own."
+        },
+        "edit": {
+            "success": "The reminder was updated successfully!",
+            "new_time": "🕐 New time",
+            "new_message": "💬 New message",
+            "not_found": "The reminder with ID `{id}` was not found!",
+            "already_completed": "You can't edit a completed reminder!",
+            "no_fields": "You must provide the time or the message!",
+            "not_owner": "You can't edit other people's reminders"
+        },
+        "prune": {
+            "success": "**{count}** reminder(s) deleted successfully!",
+            "empty": "No {description} reminders to delete",
+            "confirmPrune": "Are you sure that you want to delete **ALL** of your reminders?\nThis is an irreversible action."
+        },
+        "timezone": {
+            "success": "The timezone was configured successfully!",
+            "zone_field": "🌍 Timezone",
+            "current_time_field": "🕐 Current time",
+            "info_field": "Information",
+            "info_text": "Now times like `15:30` will be interpreted in your timezone.",
+            "invalid": "Invalid timezone provided!\nExamples: America/New_York, Europe/London, UTC"
+        },
+        "embed": {
+            "title": "Reminder",
+            "no_message": "*(No message)*"
+        }
     }
 }

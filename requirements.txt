@@ -6,7 +6,9 @@ python-dotenv # Read key-value pairs from .env files
 motor # To access the MongoDB database
 deep-translator # Language translation
 Pillow # Image processing capabilities
-emoji
+emoji # Emoji handling library
 pydash # Utility library for Python
 duckdb # SQL database management system
-numpy
+numpy # Numerical computing library
+pytz # Timezone library
+tzdata # Timezone database

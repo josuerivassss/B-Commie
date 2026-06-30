@@ -1,5 +1,5 @@
 from discord.ext import commands
-from core.kernel import KitBot, KitContext
+from core.kernel import CommieBot, CommieContext
 from typing import Annotated
 from core.ui.paginator import Paginator
 from core.ui.confirmator import Confirmator
@@ -23,7 +23,7 @@ class TagName(commands.clean_content):
         self.lower: bool = lower
         super().__init__()
 
-    async def convert(self, ctx: KitContext, argument: str) -> str:
+    async def convert(self, ctx: CommieContext, argument: str) -> str:
         converted = await super().convert(ctx, argument)
         lower = converted.lower().strip()
         if not lower or len(lower) > 100 or len(lower) < 1:
@@ -37,11 +37,11 @@ class TagName(commands.clean_content):
         return converted.strip() if not self.lower else lower
 
 class Tags(commands.Cog):
-    def __init__(self, bot: KitBot):
+    def __init__(self, bot: CommieBot):
         self.bot = bot
     
     @commands.hybrid_group(name="tag", invoke_without_command=True, aliases=["tags", "t"])
-    async def tags(self, ctx: KitContext, *, tag_name: str):
+    async def tags(self, ctx: CommieContext, *, tag_name: str):
         """Fetches and displays a tag by name"""
         await self.tag_view(ctx, tag_name=tag_name)
     
@@ -49,7 +49,7 @@ class Tags(commands.Cog):
     @commands.cooldown(1, 2.5, commands.BucketType.member)
     @tags.command(name="view")
     @discord.app_commands.describe(tag_name="The name of the tag to view")
-    async def tag_view(self, ctx: KitContext, *, tag_name: str):
+    async def tag_view(self, ctx: CommieContext, *, tag_name: str):
         """Views a tag"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -85,7 +85,7 @@ class Tags(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     @tags.command(name="create", aliases=["add"])
     @discord.app_commands.describe(tag_name="The name of the tag to create", content="The content of the tag")
-    async def tag_create(self, ctx: KitContext, tag_name: Annotated[str, TagName], *, content: str):
+    async def tag_create(self, ctx: CommieContext, tag_name: Annotated[str, TagName], *, content: str):
         """Creates a new tag"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -122,7 +122,7 @@ class Tags(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     @tags.command(name="update", aliases=["edit"])
     @discord.app_commands.describe(tag_name="The name of the tag to update", new_content="The new content of the tag")
-    async def tag_update(self, ctx: KitContext, tag_name: Annotated[str, TagName], *, new_content: str):
+    async def tag_update(self, ctx: CommieContext, tag_name: Annotated[str, TagName], *, new_content: str):
         """Updates a tag content"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -132,6 +132,8 @@ class Tags(commands.Cog):
         existing_tag = await self.bot.db.get(table="tags", id=ctx.guild.id, path=f"tags.{normalized_name}")
         if existing_tag is None:
             raise commands.CommandError(T.get("errors.tagDoesntExist", name=tag_name), T.get("errors.tagDoesntExistHint"))
+        if existing_tag["author"] != ctx.author.id and not ctx.author.guild_permissions.administrator:
+            raise commands.CommandError(T.get("errors.unauthorized"))
         await self.bot.db.set(
             table="tags",
             id=ctx.guild.id,
@@ -144,7 +146,7 @@ class Tags(commands.Cog):
     @commands.cooldown(1, 4, commands.BucketType.member)
     @tags.command(name="delete", aliases=["remove"])
     @discord.app_commands.describe(tag_name="The name of the tag to delete")
-    async def tag_delete(self, ctx: KitContext, tag_name: Annotated[str, TagName]):
+    async def tag_delete(self, ctx: CommieContext, tag_name: Annotated[str, TagName]):
         """Removes a tag"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -152,15 +154,17 @@ class Tags(commands.Cog):
         tag = await self.bot.db.get(table="tags", id=ctx.guild.id, path=f"tags.{normalized_name}")
         if tag is None:
             raise commands.CommandError(T.get("errors.tagNotFound", name=tag_name), T.get("errors.tagNotFoundHint"))
+        if tag["author"] != ctx.author.id and not ctx.author.guild_permissions.administrator:
+            raise commands.CommandError(T.get("errors.unauthorized"))
         await self.bot.db.delete(table="tags", id=ctx.guild.id, field=f"tags.{normalized_name}")
         await ctx.answer(T.get("tags.tagDeleted", name=tag_name), type="success")
     
 
     @commands.guild_only()
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     @commands.cooldown(1, 15, commands.BucketType.member)
     @tags.command(name="prune", aliases=["clear"])
-    async def tag_prune(self, ctx: KitContext):
+    async def tag_prune(self, ctx: CommieContext):
         """Prunes all tags in this server"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -188,7 +192,7 @@ class Tags(commands.Cog):
     
     @commands.guild_only()
     @tags.command(name="list")
-    async def tag_list(self, ctx: KitContext):
+    async def tag_list(self, ctx: CommieContext):
         """Lists all tags in this guild"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -204,7 +208,7 @@ class Tags(commands.Cog):
         ]
         embed = discord.Embed(
             title=f"**{ctx.guild.name}** TAGS",
-            color=discord.Color.blurple()
+            color=discord.Color.dark_red()
         )
         embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon)
         def render(page_items: list[dict], page: int, total: int):
@@ -227,5 +231,5 @@ class Tags(commands.Cog):
         paginator.update_item()
         paginator.message = await ctx.send(embed=embed, view=paginator)
 
-async def setup(bot: KitBot):
+async def setup(bot: CommieBot):
     await bot.add_cog(Tags(bot))

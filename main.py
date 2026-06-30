@@ -1,4 +1,4 @@
-from core.kernel import KitBot, KitTreeClass
+from core.kernel import CommieBot, CommieTreeClass
 import discord, os, asyncio, dotenv
 from discord.ext import commands
 
@@ -14,15 +14,15 @@ intents.message_content = True
 intents.members = True
 intents.dm_reactions = False
 
-async def get_prefix(bot: KitBot, message: discord.Message):
+async def get_prefix(bot: CommieBot, message: discord.Message):
     if message.guild is None:
         return commands.when_mentioned(bot, message)
     prefix = await bot.db.get(table="guilds", id=message.guild.id, path="prefix")
     if prefix is None:
-        return commands.when_mentioned_or("hey kit", "kit!")(bot, message)
+        return commands.when_mentioned_or("hey commie", "commie!", "c!", "c?")(bot, message)
     return commands.when_mentioned_or(prefix)(bot, message)
 
-bot = KitBot(
+bot = CommieBot(
     command_prefix=get_prefix,
     owner_ids=[931037124336164957],
     case_insensitive=True,
@@ -30,8 +30,8 @@ bot = KitBot(
     strip_after_prefix=True,
     intents=intents,
     help_command=None,
-    tree_cls=KitTreeClass,
-    activity=discord.Game(name="hey kit")
+    tree_cls=CommieTreeClass,
+    activity=discord.Game(name="hey commie")
     )
 
 async def main():

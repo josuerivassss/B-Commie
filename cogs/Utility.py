@@ -2,35 +2,35 @@ import re, discord, datetime, calendar as Calendar
 from typing import Optional
 from discord.ext import commands
 from deep_translator import GoogleTranslator
-from core.kernel import KitBot, KitContext
+from core.kernel import CommieBot, CommieContext
 from core.ui.paginator import Paginator
 
 class Utility(commands.Cog):
 
-    def __init__(self, bot: KitBot):
+    def __init__(self, bot: CommieBot):
         self.bot = bot
 
     @commands.cooldown(1, 4, commands.BucketType.member)
     @commands.command(name="avatar", aliases=["av"])
     @discord.app_commands.describe(user="The user to show the avatar of")
-    async def avatar_alias(self, ctx: KitContext, user: Optional[discord.User]):
+    async def avatar_alias(self, ctx: CommieContext, user: Optional[discord.User]):
         await self.avatar(ctx, user)
 
     @commands.hybrid_group(name="user")
-    async def user(self, ctx: KitContext):
+    async def user(self, ctx: CommieContext):
         """Related users commands"""
         ...
     
     @commands.cooldown(1, 4, commands.BucketType.member)
     @user.command(name="avatar")
     @discord.app_commands.describe(user="The user to show the avatar of")
-    async def avatar(self, ctx: KitContext, user: Optional[discord.User]):
+    async def avatar(self, ctx: CommieContext, user: Optional[discord.User]):
         """Shows the avatar of an user"""
         await ctx.defer()
         if not user:
             user = ctx.author._user
         
-        embed = discord.Embed(colour=discord.Color.blurple())
+        embed = discord.Embed(colour=discord.Color.dark_red())
         embed.set_author(name=user.name, icon_url=user.display_avatar)
         embed.set_image(url=str(user.display_avatar).replace(".webp", ".png"))
         await ctx.send(embed=embed)
@@ -38,16 +38,16 @@ class Utility(commands.Cog):
     @commands.cooldown(1, 4, commands.BucketType.member)
     @user.command(name="info")
     @discord.app_commands.describe(user="The user to show the information of")
-    async def info(self, ctx: KitContext, user: Optional[discord.User | discord.Member]):
+    async def info(self, ctx: CommieContext, user: Optional[discord.User | discord.Member]):
         """Shows information about an user"""
         await ctx.defer()
         T = await ctx.get_locale()
         if not user:
             user = ctx.author
         
-        embed = discord.Embed(colour=discord.Color.blurple(), title=user.display_name)
+        embed = discord.Embed(colour=discord.Color.dark_red(), title=user.display_name)
         embed.set_thumbnail(url=str(user.display_avatar).replace(".webp", ".png"))
-        embed.set_author(name="@" + user.global_name, icon_url=user.display_avatar)
+        embed.set_author(name=user.display_name, icon_url=user.display_avatar)
         embed.add_field(name="ID", value=user.id, inline=True)
         embed.add_field(name="Bot?", value="✅" if user.bot else "❌" , inline=True)
         if isinstance(user, discord.Member):
@@ -59,21 +59,21 @@ class Utility(commands.Cog):
         await ctx.send(embed=embed)
     
     @commands.hybrid_group(name="server")
-    async def server(self, ctx: KitContext):
+    async def server(self, ctx: CommieContext):
         """Related server commands"""
         ...
     
     @commands.guild_only()
     @commands.cooldown(1, 4, commands.BucketType.member)
     @server.command(name="icon")
-    async def icon(self, ctx: KitContext):
+    async def icon(self, ctx: CommieContext):
         """Shows the server icon"""
         await ctx.defer()
         T = await ctx.get_locale()
         if not ctx.guild or not ctx.guild.icon:
             raise commands.CommandError(T.get("errors.noIcon"), T.get("errors.noIconHint"))
         guild = ctx.guild
-        embed = discord.Embed(colour=discord.Color.blurple(), title=guild.name)
+        embed = discord.Embed(colour=discord.Color.dark_red(), title=guild.name)
         embed.set_image(url=str(guild.icon).replace(".webp", ".png"))
         embed.set_author(name=guild.name, icon_url=guild.icon)
         await ctx.send(embed=embed)
@@ -81,13 +81,13 @@ class Utility(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1, 4, commands.BucketType.member)
     @server.command(name="info")
-    async def server_info(self, ctx: KitContext):
+    async def server_info(self, ctx: CommieContext):
         """Shows information about the server"""
         await ctx.defer()
         T = await ctx.get_locale()
         guild = ctx.guild
         
-        embed = discord.Embed(colour=discord.Color.blurple(), title=guild.name)
+        embed = discord.Embed(colour=discord.Color.dark_red(), title=guild.name)
         embed.set_thumbnail(url=str(guild.icon).replace(".webp", ".png") if guild.icon else ctx.author.display_avatar)
         embed.set_author(name=guild.name, icon_url=guild.icon)
         embed.add_field(name="ID", value=guild.id, inline=True)
@@ -101,14 +101,14 @@ class Utility(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1, 4, commands.BucketType.member)
     @server.command(name="banner")
-    async def banner(self, ctx: KitContext):
+    async def banner(self, ctx: CommieContext):
         """Shows the server banner"""
         await ctx.defer()
         T = await ctx.get_locale()
         if not ctx.guild or not ctx.guild.banner:
             raise commands.CommandError(T.get("errors.noBanner"), T.get("errors.noBannerHint"))
         guild = ctx.guild
-        embed = discord.Embed(colour=discord.Color.blurple(), title=guild.name)
+        embed = discord.Embed(colour=discord.Color.dark_red(), title=guild.name)
         embed.set_image(url=str(guild.banner).replace(".webp", ".png"))
         embed.set_author(name=guild.name, icon_url=guild.icon)
         await ctx.send(embed=embed)
@@ -116,7 +116,7 @@ class Utility(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1, 4, commands.BucketType.member)
     @server.command(name="roles")
-    async def roles(self, ctx: KitContext):
+    async def roles(self, ctx: CommieContext):
         """Shows the server roles"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -124,7 +124,7 @@ class Utility(commands.Cog):
         roles = [role.mention for role in guild.roles]
         roles.reverse()
         
-        embed = discord.Embed(colour=discord.Color.blurple(), title=guild.name)
+        embed = discord.Embed(colour=discord.Color.dark_red(), title=guild.name)
         embed.set_author(name=guild.name, icon_url=guild.icon)
         roles_display = ", ".join(roles)
         if len(roles_display) > 2045:
@@ -135,13 +135,13 @@ class Utility(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1, 4, commands.BucketType.member)
     @server.command(name="members")
-    async def members(self, ctx: KitContext):
+    async def members(self, ctx: CommieContext):
         """Shows the server member count"""
         await ctx.defer()
         T = await ctx.get_locale()
         guild = ctx.guild
         
-        embed = discord.Embed(colour=discord.Color.blurple(), title=guild.name)
+        embed = discord.Embed(colour=discord.Color.dark_red(), title=guild.name)
         embed.set_author(name=guild.name, icon_url=ctx.guild.icon)
         embed.add_field(name=T.get("info.members"), value=guild.member_count, inline=True)
         embed.add_field(name=T.get("info.humans"), value=len([m for m in guild.members if not m.bot]), inline=True)
@@ -152,7 +152,7 @@ class Utility(commands.Cog):
     @commands.cooldown(1, 4, commands.BucketType.member)
     @server.command(name="role")
     @discord.app_commands.describe(role="The role to show information about")
-    async def role(self, ctx: KitContext, *, role: discord.Role):
+    async def role(self, ctx: CommieContext, *, role: discord.Role):
         """Shows information about a role"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -171,13 +171,13 @@ class Utility(commands.Cog):
     @commands.cooldown(1, 4, commands.BucketType.member)
     @server.command(name="channel")
     @discord.app_commands.describe(channel="The channel to show information about")
-    async def channel(self, ctx: KitContext, *, channel: Optional[discord.abc.GuildChannel]):
+    async def channel(self, ctx: CommieContext, *, channel: Optional[discord.abc.GuildChannel]):
         """Shows information about a channel"""
         await ctx.defer()
         T = await ctx.get_locale()
         if not channel:
             channel = ctx.channel
-        embed = discord.Embed(colour=discord.Color.blurple(), title=channel.name)
+        embed = discord.Embed(colour=discord.Color.dark_red(), title=channel.name)
         embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon)
         embed.add_field(name="ID", value=channel.id, inline=True)
         embed.add_field(name=T.get("info.type"), value=str(channel.type).split(".")[-1], inline=True)
@@ -191,7 +191,7 @@ class Utility(commands.Cog):
     
     @commands.cooldown(1, 4, commands.BucketType.member)
     @commands.hybrid_command(name="calendar")
-    async def calendar(self, ctx: KitContext):
+    async def calendar(self, ctx: CommieContext):
         """Shows a calendar"""
         await ctx.defer()
 
@@ -207,7 +207,7 @@ class Utility(commands.Cog):
         target_code="The currency code to convert to, ex: EUR",
         amount="The amount to convert, ex: 2"
     )
-    async def rate(self, ctx: KitContext, source_code: str, target_code: str, amount: float):
+    async def rate(self, ctx: CommieContext, source_code: str, target_code: str, amount: float):
         """Converts an amount from a source currency to a target currency"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -228,7 +228,7 @@ class Utility(commands.Cog):
         await ctx.send(message)
     
     @commands.hybrid_group(name="emoji")
-    async def emoji(self, ctx: KitContext):
+    async def emoji(self, ctx: CommieContext):
         """Related emoji commands"""
         ...
     
@@ -236,12 +236,12 @@ class Utility(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.member)
     @emoji.command(name="info")
     @discord.app_commands.describe(emoji="The emoji to show information about")
-    async def emoji_info(self, ctx: KitContext, *, emoji: discord.Emoji):
+    async def emoji_info(self, ctx: CommieContext, *, emoji: discord.Emoji):
         """Shows information about an emoji"""
         await ctx.defer()
         T = await ctx.get_locale()
         
-        embed = discord.Embed(colour=discord.Color.blurple(), title=emoji.name)
+        embed = discord.Embed(colour=discord.Color.dark_red(), title=emoji.name)
         embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon)
         embed.set_image(url=str(emoji.url).replace(".webp", ".png"))
         embed.add_field(name="ID", value=emoji.id, inline=True)
@@ -251,7 +251,7 @@ class Utility(commands.Cog):
         await ctx.send(embed=embed)
     
     @emoji_info.error
-    async def emoji_info_error(self, ctx: KitContext, error):
+    async def emoji_info_error(self, ctx: CommieContext, error):
         T = await ctx.get_locale()
         if isinstance(error, commands.BadArgument):
             raise commands.CommandError(T.get("errors.invalidEmoji"), T.get("errors.invalidEmojiHint"))
@@ -260,7 +260,7 @@ class Utility(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.member)
     @emoji.command(name="image", aliases=["url", "jumbo"])
     @discord.app_commands.describe(emoji="The emoji to show the image of")
-    async def emoji_image(self, ctx: KitContext, emoji: str):
+    async def emoji_image(self, ctx: CommieContext, emoji: str):
         """Shows the image of an emoji"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -278,7 +278,7 @@ class Utility(commands.Cog):
     @commands.has_permissions(manage_emojis=True)
     @emoji.command(name="add")
     @discord.app_commands.describe(url="The URL of the emoji to add", name="The name of the emoji to add")
-    async def emoji_add(self, ctx: KitContext, url: str, name: Optional[str] = "unknown"):
+    async def emoji_add(self, ctx: CommieContext, url: str, name: Optional[str] = "unknown"):
         """Adds an emoji to the server from a URL"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -304,7 +304,7 @@ class Utility(commands.Cog):
     @commands.has_permissions(manage_emojis=True)
     @emoji.command(name="remove")
     @discord.app_commands.describe(emoji="The emoji to remove from the server")
-    async def emoji_remove(self, ctx: KitContext, emoji: discord.Emoji):
+    async def emoji_remove(self, ctx: CommieContext, emoji: discord.Emoji):
         """Removes an emoji from the server"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -317,7 +317,7 @@ class Utility(commands.Cog):
     @commands.cooldown(1, 8, commands.BucketType.user)
     @commands.hybrid_command(name="quote")
     @discord.app_commands.describe(message="The message to quote")
-    async def quote(self, ctx: KitContext, *, message: discord.Message):
+    async def quote(self, ctx: CommieContext, *, message: discord.Message):
         """Quotes a message"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -330,7 +330,7 @@ class Utility(commands.Cog):
     @commands.cooldown(1, 8, commands.BucketType.user)
     @commands.hybrid_command(name="image", aliases=["img"])
     @discord.app_commands.describe(query="The search query to find an image for")
-    async def image(self, ctx: KitContext, *, query: str):
+    async def image(self, ctx: CommieContext, *, query: str):
         """Searches for an image using Bing Image Search"""
         T = await ctx.get_locale()
         res: bytes | None = await self.bot.toolkit.request(url=f"https://www.bing.com/images/async?q={query}&adlt=on", extract="bytes")
@@ -341,7 +341,7 @@ class Utility(commands.Cog):
         if not links:
             raise commands.CommandError(T.get("errors.noImageResults"), T.get("errors.noImageResultsHint"))
 
-        embed = discord.Embed(color=discord.Color.blurple())
+        embed = discord.Embed(color=discord.Color.dark_red())
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar)
         embed.set_image(url=links[0])
 
@@ -355,7 +355,7 @@ class Utility(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.hybrid_command(name="color", aliases=["hex"])
     @discord.app_commands.describe(hex_code="The hex code of the color to show information about")
-    async def color(self, ctx: KitContext, hex_code: str):
+    async def color(self, ctx: CommieContext, hex_code: str):
         """Shows information about a color given its hex code"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -391,44 +391,10 @@ class Utility(commands.Cog):
         embed.set_image(url=f"https://singlecolorimage.com/get/{hex_code.upper()}/400x200")
         await ctx.send(embed=embed)
     
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.hybrid_command(name="country", aliases=["nation"])
-    @discord.app_commands.describe(country_code="The country name or code to show information about")
-    async def country(self, ctx: KitContext, country_code: str):
-        """Shows information about a country"""
-        await ctx.defer()
-        T = await ctx.get_locale()
-        res: dict | None = await self.bot.toolkit.request(url=f"https://restcountries.com/v3.1/name/{country_code}")
-
-        if not res or not isinstance(res, list) or len(res) == 0:
-            raise commands.CommandError(T.get("errors.notInfo"), T.get("errors.notInfoHint"))
-        
-        country = res[0]
-        name = country.get("name", {}).get("common", T.get("unknown"))
-        capital = ", ".join(country.get("capital", [T.get("unknown")]))
-        c = list(country.get("currencies", {}).keys())[0]
-        currency = country.get("currencies", {}).get(c, {}).get("name", T.get("unknown")) + f" ({c})"
-        emoji_of_flag = country.get("flag", "")
-        region = country.get("region", T.get("unknown"))
-        population = country.get("population", T.get("unknown"))
-        area = country.get("area", T.get("unknown"))
-        flag_url = country.get("flags", {}).get("png", "")
-        
-        embed = discord.Embed(color=discord.Color.blurple(), title=name)
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar)
-        embed.set_thumbnail(url=flag_url)
-        embed.add_field(name=T.get("utility.capital"), value=capital, inline=True)
-        embed.add_field(name=T.get("utility.currency"), value=currency, inline=True)
-        embed.add_field(name=T.get("utility.flag"), value=emoji_of_flag, inline=True)
-        embed.add_field(name=T.get("utility.region"), value=region, inline=True)
-        embed.add_field(name=T.get("utility.population"), value=f"{population:,}", inline=True)
-        embed.add_field(name=T.get("utility.area"), value=f"{area} km²", inline=True)
-        await ctx.send(embed=embed)
-    
     @commands.cooldown(1, 8, commands.BucketType.user)
     @commands.hybrid_command(name="translate", aliases=["translator"])
     @discord.app_commands.describe(target="The target language code", text="The text to translate")
-    async def translate(self, ctx: KitContext, target: str, *, text: str):
+    async def translate(self, ctx: CommieContext, target: str, *, text: str):
         """Translates a text to a target language using Google Translate"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -438,11 +404,11 @@ class Utility(commands.Cog):
             raise commands.CommandError(T.get("errors.invalidLanguage"), T.get("errors.invalidLanguageHint"))
         translator.target = target
         try:
-            embed = discord.Embed(color=discord.Color.blurple(), title=f"**__{translator.source.upper()}__ ➜ __{translator.target.upper()}__**", description=translator.translate(text))
+            embed = discord.Embed(color=discord.Color.dark_red(), title=f"**__{translator.source.upper()}__ ➜ __{translator.target.upper()}__**", description=translator.translate(text))
             embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar)
             await ctx.send(embed=embed)
         except Exception:
             raise commands.CommandError(T.get("errors.notInfo"), T.get("errors.notInfoHint"))
 
-async def setup(bot: KitBot):
+async def setup(bot: CommieBot):
     await bot.add_cog(Utility(bot))

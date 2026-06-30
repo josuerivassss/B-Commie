@@ -1,16 +1,16 @@
 import discord
 from discord.ext import commands
 from core.kernel.locale import Locale
-from core.kernel.emojis import KitEmojis
+from core.kernel.emojis import CommieEmojis
 from enum import StrEnum
-from typing import Union
+from typing import Union, Optional
 
 class AnswerType(StrEnum):
     Info = "info"
     Error = "error"
     Ok = "success"
 
-class KitContext(commands.Context):
+class CommieContext(commands.Context):
 
     async def get_language(self) -> str:
         if self.guild is None:
@@ -57,9 +57,9 @@ class KitContext(commands.Context):
                 message = f"{message} {emoji}"
             else:
                 emojis = {
-                    AnswerType.Ok: KitEmojis.Heart,
-                    AnswerType.Error: KitEmojis.Crying,
-                    AnswerType.Info: KitEmojis.Confused
+                    AnswerType.Ok: CommieEmojis.Heart,
+                    AnswerType.Error: CommieEmojis.Crying,
+                    AnswerType.Info: CommieEmojis.Idea
                 }
                 message = f"{message} {emojis.get(type, "")}"
         
@@ -156,3 +156,29 @@ class KitContext(commands.Context):
                     continue
         
         return sent
+    
+    @classmethod
+    def create_for_event(
+        cls,
+        bot,
+        author: discord.Member | discord.User,
+        guild: Optional[discord.Guild] = None,
+        channel: Optional[discord.abc.Messageable] = None
+    ):
+        """
+        Create a pseudo-context for events.
+        
+        Usage:
+            ctx = CommieContext.create_for_event(bot, member, member.guild, welcome_channel)
+            result = await ctx.render_template(template)
+        """
+        # Create a minimal context-like object
+        fake_ctx = cls.__new__(cls)
+        fake_ctx.bot = bot
+        fake_ctx.author = author
+        fake_ctx.guild = guild or (author.guild if isinstance(author, discord.Member) else None)
+        fake_ctx.channel = channel
+        fake_ctx.message = None
+        fake_ctx.command = None
+        fake_ctx.prefix = None
+        return fake_ctx

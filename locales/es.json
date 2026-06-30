@@ -61,7 +61,8 @@
         "example": "Ejemplo",
         "category": "Categoría",
         "usage": "Uso",
-        "noDescription": "Sin descripción disponible."
+        "noDescription": "Sin descripción disponible.",
+        "notFound": "No se encontró ningún comando o módulo con el nombre '{query}'."
     },
     "tags": {
         "tagCreated": "¡Tag `{name}` creado exitosamente!",
@@ -98,6 +99,7 @@
         "messagesCleared": "¡**{count}** mensajes han sido eliminados en {channel}!"
     },
     "errors": {
+        "unauthorized": "No tienes autorización para ejecutar este comando.",
         "noIcon": "Este servidor no tiene icono.",
         "noBanner": "Este servidor no tiene banner.",
         "notInfo": "No hay información disponible sobre esto.",
@@ -105,6 +107,7 @@
         "emojiLimitReached": "Se ha alcanzado el límite de emojis para este servidor.",
         "noImageResults": "No se encontraron resultados de imágenes.",
         "invalidLanguage": "El idioma especificado no es compatible.",
+        "invalidLanguageHint": "Usa **`/languageslist`** para ver los lenguajes disponibles.",
         "internalError": "Ocurrió un error interno.",
         "prefixTooLong": "El prefijo es demasiado largo. Por favor elige un prefijo con menos de {max} caracteres.",
         "onCooldown": "Este comando está en enfriamiento.",
@@ -172,5 +175,61 @@
         "clearAmountInvalid": "La cantidad de mensajes a eliminar es inválida.",
         "clearAmountInvalidHint": "Debe estar entre 1 y 100",
         "userNotBanned": "Este usuario no está baneado."
+    },
+    "reminders": {
+        "add": {
+            "success": "¡Se ha establecido el recordatorio para {date} ({relative}) exitosamente!",
+            "when_field": "📅 Cuándo",
+            "message_field": "💬 Mensaje",
+            "channel_field": "📍 Canal",
+            "invalid_time": "Formato de tiempo inválido\nEjemplos válidos:\n• Relativo: `30s`, `30m`, `2h`, `1d`, `1w`, `1mo`, `1y`\n• Combinado: `1d12h`, `2w3d`\n• Absoluto: `2025-02-10 15:30`, `15:30`",
+            "message_too_long": "El mensaje no puede exceder 500 caracteres",
+            "future_only": "El tiempo debe ser en el futuro",
+            "limit_reached": "Has alcanzado el número máximo de recordatorios (10). Por favor elimina algunos antes de agregar nuevos.",
+            "no_permissions": "No tengo permiso para enviar mensajes en {channel}. Por favor elige un canal diferente o concédeme los permisos necesarios."
+        },
+        "list": {
+            "title": "Tus recordatorios",
+            "empty": "No tienes recordatorios aún.",
+            "when": "Cuándo",
+            "channel": "Canal",
+            "message": "Mensaje",
+            "deleted_channel": "*Canal eliminado*",
+            "no_message": "*Sin mensaje*",
+            "footer_more": "Mostrando {shown} de {total}",
+            "footer_total": "Total: {total} recordatorio(s)"
+        },
+        "remove": {
+            "success": "¡El recordatorio ha sido eliminado correctamente!",
+            "not_found": "El recordatorio con ID `{id}` no fue encontrado.",
+            "invalid_id": "El ID proporcionado es inválido. Por favor proporciona un ID de recordatorio válido.",
+            "not_owner": "No puedes eliminar un recordatorio que no es tuyo."
+        },
+        "edit": {
+            "success": "¡El recordatorio fue actualizado correctamente!",
+            "new_time": "🕐 Nuevo tiempo",
+            "new_message": "💬 Nuevo mensaje",
+            "not_found": "¡El recordatorio con ID `{id}` no fue encontrado!",
+            "already_completed": "¡No puedes editar un recordatorio completado!",
+            "no_fields": "¡Debes proporcionar el tiempo o el mensaje!",
+            "not_owner": "No puedes editar recordatorios de otros"
+        },
+        "prune": {
+            "success": "¡**{count}** recordatorio(s) eliminado(s) correctamente!",
+            "empty": "No hay recordatorios {description} para eliminar",
+            "confirmPrune": "¿Estás seguro de que quieres eliminar **TODOS** tus recordatorios?\nEsta es una acción irreversible."
+        },
+        "timezone": {
+            "success": "¡La zona horaria se ha configurado correctamente!",
+            "zone_field": "🌍 Zona horaria",
+            "current_time_field": "🕐 Hora actual",
+            "info_field": "Información",
+            "info_text": "Ahora tiempos como `15:30` se interpretarán en tu zona horaria.",
+            "invalid": "¡Zona horaria inválida proporcionada!\nEjemplos: America/Mexico_City, Europe/Madrid, UTC"
+        },
+        "embed": {
+            "title": "Recordatorio",
+            "no_message": "*(Sin mensaje)*"
+        }
     }
 }

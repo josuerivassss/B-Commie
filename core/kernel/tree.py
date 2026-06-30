@@ -1,7 +1,7 @@
 from typing import List, Optional
 import discord
 
-class KitTreeClass(discord.app_commands.CommandTree):
+class CommieTreeClass(discord.app_commands.CommandTree):
     # we are creating custom sync
     async def sync(cls, *, guild: Optional[discord.abc.Snowflake] = None) -> List[discord.app_commands.AppCommand]:
         """|coro|

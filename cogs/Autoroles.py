@@ -1,5 +1,5 @@
 from discord.ext import commands
-from core.kernel import KitBot, KitContext
+from core.kernel import CommieBot, CommieContext
 from core.help import send_help_group
 import discord
 from typing import Literal
@@ -16,13 +16,13 @@ GUILDS TABLE
 
 class Autoroles(commands.Cog):
 
-    def __init__(self, bot: KitBot):
+    def __init__(self, bot: CommieBot):
         self.bot = bot
     
     @commands.has_guild_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
     @commands.hybrid_group(name="autoroles")
-    async def autoroles(self, ctx: KitContext):
+    async def autoroles(self, ctx: CommieContext):
         """Autoroles related commands"""
         if ctx.invoked_subcommand is None:
             cmd = self.bot.get_command("autoroles")
@@ -32,7 +32,7 @@ class Autoroles(commands.Cog):
     @commands.bot_has_permissions(manage_roles=True)
     @autoroles.command(name="add")
     @discord.app_commands.describe(usertype="The type of user to assign the role to")
-    async def autoroles_add(self, ctx: KitContext, role: discord.Role, usertype: Literal["bots", "humans"] = "humans"):
+    async def autoroles_add(self, ctx: CommieContext, role: discord.Role, usertype: Literal["bots", "humans"] = "humans"):
         """Adds a role to the autoroles"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -53,7 +53,7 @@ class Autoroles(commands.Cog):
     @commands.bot_has_permissions(manage_roles=True)
     @autoroles.command(name="remove", aliases=["delete"])
     @discord.app_commands.describe(usertype="The type of user to assign the role to")
-    async def autoroles_remove(self, ctx: KitContext, role: discord.Role, usertype: Literal["bots", "humans"] = "humans"):
+    async def autoroles_remove(self, ctx: CommieContext, role: discord.Role, usertype: Literal["bots", "humans"] = "humans"):
         """Removes a role from the autoroles"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -69,7 +69,7 @@ class Autoroles(commands.Cog):
     @commands.has_guild_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
     @autoroles.command(name="list", aliases=["show"])
-    async def autoroles_list(self, ctx: KitContext):
+    async def autoroles_list(self, ctx: CommieContext):
         """Lists the autoroles"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -86,7 +86,7 @@ class Autoroles(commands.Cog):
                     roles.append(f"`{r_id}`")
             return ", ".join(roles) if roles else T.get("errors.noRolesSet")
         
-        embed = discord.Embed(title="Autoroles", color=discord.Color.blue())
+        embed = discord.Embed(title="Autoroles", color=discord.Color.dark_red())
         embed.add_field(name=T.get("info.humans"), value=format_roles(humans), inline=False)
         embed.add_field(name=T.get("info.bots"), value=format_roles(bots), inline=False)
         await ctx.send(embed=embed)
@@ -110,5 +110,5 @@ class Autoroles(commands.Cog):
                     pass
 
 
-async def setup(bot: KitBot):
+async def setup(bot: CommieBot):
     await bot.add_cog(Autoroles(bot))

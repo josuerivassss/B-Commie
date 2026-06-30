@@ -25,7 +25,8 @@ class SQLDatabaseManager:
     # SQL Injection Protection: Whitelist of allowed table names
     ALLOWED_TABLES: Set[str] = {
         "giveaways",
-        "reminders"
+        "reminders",
+        "user_timezones"
     }
     
     # Table schemas with JSON support for flexible data
@@ -45,14 +46,22 @@ class SQLDatabaseManager:
         """,
         "reminders": """
             CREATE TABLE IF NOT EXISTS reminders (
-                id BIGINT PRIMARY KEY,
+                id TEXT PRIMARY KEY,
                 user_id BIGINT NOT NULL,
                 guild_id BIGINT,
                 channel_id BIGINT,
-                message TEXT,
+                message TEXT NOT NULL,
                 remind_at TIMESTAMP NOT NULL,
                 reminded BOOLEAN DEFAULT FALSE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """,
+        "user_timezones": """
+            CREATE TABLE IF NOT EXISTS user_timezones (
+                id BIGINT PRIMARY KEY,
+                user_id BIGINT NOT NULL UNIQUE,
+                timezone VARCHAR NOT NULL,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """
     }
@@ -68,7 +77,8 @@ class SQLDatabaseManager:
         "reminders": [
             "CREATE INDEX IF NOT EXISTS idx_reminders_user_reminded ON reminders(user_id, reminded)",
             "CREATE INDEX IF NOT EXISTS idx_reminders_remind_at_reminded ON reminders(remind_at, reminded)"
-        ]
+        ],
+        "user_timezones": []
     }
     
     # Validation patterns
@@ -78,7 +88,7 @@ class SQLDatabaseManager:
     
     def __init__(
         self,
-        db_name: str = "kitbot",
+        db_name: str = "CommieBot",
         db_directory: str = "./database",
         strict_tables: bool = True,
         auto_create_tables: bool = True,
@@ -101,7 +111,7 @@ class SQLDatabaseManager:
             - JSON paths validated to prevent injection
         
         Example:
-            db = SQLDatabase(db_name="kitbot", db_directory="./database")
+            db = SQLDatabase(db_name="CommieBot", db_directory="./database")
         """
         self.db_name = db_name
         self.db_directory = Path(db_directory)
@@ -349,6 +359,14 @@ class SQLDatabaseManager:
         
         if data is None and path is None:
             raise ValueError("Must provide either 'data' or 'path' parameter")
+        
+        # CRITICAL: Prevent 'id' from being in data dict (avoids SQL column duplication)
+        if data is not None and 'id' in data:
+            raise ValueError(
+                "The 'id' key must NOT be included in the data dict. "
+                "Pass it only as the 'id' parameter. "
+                f"Received: id={id}, data={data}"
+            )
         
         def _execute_set():
             # Path mode: Update JSON field

@@ -146,7 +146,10 @@ dic = {
 }
 
 def parse(string):
-    r = re.findall('(\d+\.\d+|\d+)(ms|s|mo|m|h|d|w|y)', string, flags=re.IGNORECASE)
+    """
+    Parses a time string like '1h30m' into milliseconds.
+    """
+    r = re.findall(r'(\d+\.\d+|\d+)(ms|s|mo|m|h|d|w|y)', string, flags=re.IGNORECASE)
     if not r:
         return None
     final = 0
@@ -156,6 +159,9 @@ def parse(string):
     return final
 
 def ms_to_short(number):
+    """
+    Converts milliseconds into a short string format like '5m' or '2h'.
+    """
     absed = abs(number)
     for key in list(dic.keys())[::-1]:
         if absed >= dic[key]["value"]:
@@ -164,6 +170,9 @@ def ms_to_short(number):
             continue
 
 def ms_to_long(number):
+    """
+    Converts milliseconds into a long string format like '5 minutes' or '2 hours'.
+    """
     absed = abs(number)
     for key in (list(dic.keys())[::-1]):
         if absed >= dic[key]["value"]:
@@ -172,10 +181,19 @@ def ms_to_long(number):
             continue
 
 def pluralify(ms, absed, x, name):
+    """
+    Converts a time value into a pluralized string based on its magnitude.
+    """
     see = absed >= x * 1.5
     return f'{round(ms / x)} {name}{"s" if see else ""}'
 
 def load(time: str | int | float, long = False):
+    """
+    Parses a time string or number into a human-readable format.
+    Usage:
+    - load("1h30m") -> 5400000
+    - load(5400000, long=True) -> "1 hour 30 minutes"
+    """
     if isinstance(time, str):
         return parse(time)
     else:

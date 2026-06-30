@@ -18,14 +18,14 @@ Typical usage:
 
 from typing import Callable, Awaitable
 import discord
-from core.kernel.context import KitContext
+from core.kernel.context import CommieContext
 from core.kernel.locale import Locale
 
 class Confirmator(discord.ui.View):
     def __init__(
         self,
         *,
-        ctx: KitContext,
+        ctx: CommieContext,
         locale: Locale,
         on_confirm: Callable[[discord.Interaction], Awaitable[None]] | None = None,
         on_cancel: Callable[[discord.Interaction], Awaitable[None]] | None = None,

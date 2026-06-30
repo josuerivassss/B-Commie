@@ -1,13 +1,13 @@
 import datetime, os, discord
 from discord.ext import commands
-from core.kernel.context import KitContext
+from core.kernel.context import CommieContext
 from core.toolkit import ToolKit
 from core.managers.LanguageManager import LanguageManager
 from core.managers.DatabaseManager import MongoDatabaseManager
 from core.managers.SQLDatabaseManager import SQLDatabaseManager
 from typing import List
 
-class KitBot(commands.Bot):
+class CommieBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(
             *args,
@@ -22,7 +22,7 @@ class KitBot(commands.Bot):
         self.db = MongoDatabaseManager(url=os.getenv("MONGO_URL"), db_name="kitdb")
         # Database manager (DuckDB)
         self.sql = SQLDatabaseManager(
-            db_name="kitbot",
+            db_name="CommieBot",
             db_directory="./database",
             strict_tables=True,
             auto_create_tables=True
@@ -33,8 +33,8 @@ class KitBot(commands.Bot):
             default_language="es"
         )
     
-    # Override get_context to use KitContext
-    async def get_context(self, origin, *, cls=KitContext):
+    # Override get_context to use CommieContext
+    async def get_context(self, origin, *, cls=CommieContext):
         return await super().get_context(origin, cls=cls)
 
     # Load cogs on startup

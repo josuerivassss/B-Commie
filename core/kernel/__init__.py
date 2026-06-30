@@ -1,14 +1,14 @@
-from .kit import KitBot
-from .context import KitContext, AnswerType
-from .emojis import KitEmojis
+from .commie import CommieBot
+from .context import CommieContext, AnswerType
+from .emojis import CommieEmojis
 from .locale import Locale
-from .tree import KitTreeClass
+from .tree import CommieTreeClass
 
 __all__ = (
-    "KitBot",
-    "KitContext",
+    "CommieBot",
+    "CommieContext",
     "Locale",
-    "KitTreeClass",
+    "CommieTreeClass",
     "AnswerType",
-    "KitEmojis"
+    "CommieEmojis"
 )

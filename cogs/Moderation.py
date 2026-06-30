@@ -1,9 +1,10 @@
 from discord.ext import commands
-from core.kernel import KitBot, KitContext
+from core.kernel import CommieBot, CommieContext
+from core.toolkit import load
 import discord
 
 class Moderation(commands.Cog):
-    def __init__(self, bot: KitBot):
+    def __init__(self, bot: CommieBot):
         self.bot = bot
 
     @commands.cooldown(1, 5, commands.BucketType.member)
@@ -11,7 +12,7 @@ class Moderation(commands.Cog):
     @commands.bot_has_guild_permissions(manage_channels=True)
     @commands.hybrid_command(name="lockdown", aliases=["lock"])
     @discord.app_commands.describe(channel="The channel to lockdown")
-    async def lockdown(self, ctx: KitContext, channel: discord.TextChannel = None):
+    async def lockdown(self, ctx: CommieContext, channel: discord.TextChannel = None):
         """Locks a channel for everyone"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -28,7 +29,7 @@ class Moderation(commands.Cog):
     @commands.bot_has_guild_permissions(manage_channels=True)
     @commands.hybrid_command(name="unlockdown", aliases=["unlock"])
     @discord.app_commands.describe(channel="The channel to unlock")
-    async def unlockdown(self, ctx: KitContext, channel: discord.TextChannel = None):
+    async def unlockdown(self, ctx: CommieContext, channel: discord.TextChannel = None):
         """Unlocks a channel for everyone"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -44,15 +45,15 @@ class Moderation(commands.Cog):
     @commands.has_guild_permissions(moderate_members=True)
     @commands.bot_has_guild_permissions(moderate_members=True)
     @commands.hybrid_command(name="timeout", aliases=["tempmute"])
-    @discord.app_commands.describe(duration="The duration of the timeout in seconds", member="The member to timeout")
-    async def timeout(self, ctx: KitContext, member: discord.Member, duration: int, *, reason: str = None):
+    @discord.app_commands.describe(duration="The duration of the timeout", member="The member to timeout")
+    async def timeout(self, ctx: CommieContext, member: discord.Member, duration: int, *, reason: str = None):
         """Timeouts a member for a certain amount of seconds"""
         await ctx.defer()
         T = await ctx.get_locale()
         if member.id == ctx.author.id:
             raise commands.CommandError(T.get("errors.cantActionYourself"))
         if member.id == ctx.me.id:
-            raise commands.CommandError(T.get("errors.cantActiontMe"))
+            raise commands.CommandError(T.get("errors.cantActionMe"))
         if member.top_role.position >= ctx.me.top_role.position:
             raise commands.CommandError(T.get("errors.cantActionHigherRole"), T.get("errors.cantActionHigherRoleHint"))
         if member.id == ctx.guild.owner_id:
@@ -61,7 +62,8 @@ class Moderation(commands.Cog):
             raise commands.CommandError(T.get("errors.cantActionAdmin"))
         if member.timed_out_until is not None:
             raise commands.CommandError(T.get("errors.memberAlreadyTimedOut"))
-        if duration < 60 or duration > 2419200:
+        duration = load(duration)
+        if not duration or duration < 60 or duration > 2419200:
             raise commands.CommandError(T.get("errors.timeoutDurationInvalid"), T.get("errors.timeoutDurationInvalidHint"))
         until = discord.utils.utcnow() + discord.timedelta(seconds=duration)
         await member.timeout(until, reason=reason or f"Timeout by {ctx.author} ({ctx.author.id})")
@@ -72,14 +74,14 @@ class Moderation(commands.Cog):
     @commands.bot_has_guild_permissions(moderate_members=True)
     @commands.hybrid_command(name="untimeout", aliases=["untimemute"])
     @discord.app_commands.describe(member="The member to untimeout")
-    async def untimeout(self, ctx: KitContext, member: discord.Member, *, reason: str = None):
+    async def untimeout(self, ctx: CommieContext, member: discord.Member, *, reason: str = None):
         """Untimeouts a member"""
         await ctx.defer()
         T = await ctx.get_locale()
         if member.id == ctx.author.id:
             raise commands.CommandError(T.get("errors.cantActionYourself"))
         if member.id == ctx.me.id:
-            raise commands.CommandError(T.get("errors.cantActiontMe"))
+            raise commands.CommandError(T.get("errors.cantActionMe"))
         if member.top_role.position >= ctx.me.top_role.position:
             raise commands.CommandError(T.get("errors.cantActionHigherRole"), T.get("errors.cantActionHigherRoleHint"))
         if member.id == ctx.guild.owner_id:
@@ -96,7 +98,7 @@ class Moderation(commands.Cog):
     @commands.has_guild_permissions(manage_messages=True)
     @commands.hybrid_command(name="clear", aliases=["purge", "clean"])
     @discord.app_commands.describe(amount="The amount of messages to clear", member="The member whose messages to clear")
-    async def clear(self, ctx: KitContext, amount: int = 10, member: discord.Member = None):
+    async def clear(self, ctx: CommieContext, amount: int = 10, member: discord.Member = None):
         """Clears a number of messages in the channel"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -114,14 +116,14 @@ class Moderation(commands.Cog):
     @commands.has_guild_permissions(kick_members=True)
     @commands.hybrid_command(name="kick")
     @discord.app_commands.describe(member="The member to kick", reason="The reason for the kick")
-    async def kick(self, ctx: KitContext, member: discord.Member, *, reason: str = None):
+    async def kick(self, ctx: CommieContext, member: discord.Member, *, reason: str = None):
         """Kicks a member from the server"""
         await ctx.defer()
         T = await ctx.get_locale()
         if member.id == ctx.author.id:
             raise commands.CommandError(T.get("errors.cantActionYourself"))
         if member.id == ctx.me.id:
-            raise commands.CommandError(T.get("errors.cantActiontMe"))
+            raise commands.CommandError(T.get("errors.cantActionMe"))
         if member.top_role.position >= ctx.me.top_role.position:
             raise commands.CommandError(T.get("errors.cantActionHigherRole"), T.get("errors.cantActionHigherRoleHint"))
         if member.id == ctx.guild.owner_id:
@@ -136,14 +138,14 @@ class Moderation(commands.Cog):
     @commands.has_guild_permissions(ban_members=True)
     @commands.hybrid_command(name="ban")
     @discord.app_commands.describe(member="The member to ban", reason="The reason for the ban")
-    async def ban(self, ctx: KitContext, member: discord.Member, *, reason: str = None):
+    async def ban(self, ctx: CommieContext, member: discord.Member, *, reason: str = None):
         """Bans a member from the server"""
         await ctx.defer()
         T = await ctx.get_locale()
         if member.id == ctx.author.id:
             raise commands.CommandError(T.get("errors.cantActionYourself"))
         if member.id == ctx.me.id:
-            raise commands.CommandError(T.get("errors.cantActiontMe"))
+            raise commands.CommandError(T.get("errors.cantActionMe"))
         if member.top_role.position >= ctx.me.top_role.position:
             raise commands.CommandError(T.get("errors.cantActionHigherRole"), T.get("errors.cantActionHigherRoleHint"))
         if member.id == ctx.guild.owner_id:
@@ -158,7 +160,7 @@ class Moderation(commands.Cog):
     @commands.has_guild_permissions(ban_members=True)
     @commands.hybrid_command(name="unban")
     @discord.app_commands.describe(user="The user to unban", reason="The reason for the unban")
-    async def unban(self, ctx: KitContext, user: discord.User, *, reason: str = None):
+    async def unban(self, ctx: CommieContext, user: discord.User, *, reason: str = None):
         """Unbans a member from the server"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -168,5 +170,5 @@ class Moderation(commands.Cog):
         await ctx.guild.unban(user, reason=reason or f"Unban by {ctx.author} ({ctx.author.id})")
         await ctx.answer(T.get("success.memberUnbanned", user=str(user)), type="success", bold=False)
     
-async def setup(bot: KitBot):
+async def setup(bot: CommieBot):
     await bot.add_cog(Moderation(bot))

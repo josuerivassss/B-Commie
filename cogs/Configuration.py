@@ -1,17 +1,17 @@
 from discord.ext import commands
-from core.kernel import KitBot, KitContext
+from core.kernel import CommieBot, CommieContext
 from typing import Literal
 import discord
 
 class Configuration(commands.Cog):
-    def __init__(self, bot: KitBot):
+    def __init__(self, bot: CommieBot):
         self.bot = bot
     
     @commands.hybrid_command(name="prefix")
     @commands.cooldown(1, 120, commands.BucketType.guild)
     @commands.has_permissions(manage_guild=True)
     @discord.app_commands.describe(prefix="The new prefix for the bot, or 'reset' to use the default one")
-    async def prefix(self, ctx: KitContext, *, prefix: str):
+    async def prefix(self, ctx: CommieContext, *, prefix: str):
         """Sets a new prefix for the bot in this server"""
         await ctx.defer()
         T = await ctx.get_locale()
@@ -29,7 +29,7 @@ class Configuration(commands.Cog):
     @commands.cooldown(1, 120, commands.BucketType.guild)
     @commands.has_permissions(manage_guild=True)
     @discord.app_commands.describe(language="The new language for the bot, or 'reset' to use the default one")
-    async def language(self, ctx: KitContext, *, language: Literal["en", "es", "reset"]):
+    async def language(self, ctx: CommieContext, *, language: Literal["en", "es", "reset"]):
         """Sets a new language for the bot in this server"""
         try:
             await ctx.defer()
@@ -46,5 +46,5 @@ class Configuration(commands.Cog):
             raise e
     
 
-async def setup(bot: KitBot):
+async def setup(bot: CommieBot):
     await bot.add_cog(Configuration(bot))

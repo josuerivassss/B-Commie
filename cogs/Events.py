@@ -1,9 +1,9 @@
-import datetime
+import discord
 from discord.ext import commands
-from core.kernel import KitBot, KitContext
+from core.kernel import CommieBot, CommieContext
 
 class Events(commands.Cog):
-    def __init__(self, bot: KitBot):
+    def __init__(self, bot: CommieBot):
         self.bot = bot
     
     @commands.Cog.listener()
@@ -12,7 +12,7 @@ class Events(commands.Cog):
         print(f"{self.bot.user.display_name} is online.")
         
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: KitContext, error: commands.CommandError):
+    async def on_command_error(self, ctx: CommieContext, error: commands.CommandError):
         T = await ctx.get_locale()
         
         if isinstance(error, commands.CommandOnCooldown):
@@ -43,7 +43,7 @@ class Events(commands.Cog):
             message = error.args[0] if error.args else T.get('errors.unexpectedError')
             hint = error.args[1] if len(error.args) > 1 else ''
             if hint:
-                return await ctx.answer(f"{message}\n-# {hint}", type="error")
+                return await ctx.answer(f"{message}", hint=hint, type="error")
             else:
                 return await ctx.answer(message, type="error")
         else:
@@ -59,6 +59,60 @@ class Events(commands.Cog):
         import traceback
         traceback.print_exc()
     
+    # Reminders
+    
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild: discord.Guild):
+        """Clear reminders when the bot leaves a server"""
+        try:
+            reminders = await self.bot.sql.find(table="reminders", where={"guild_id": guild.id})
+            for reminder in reminders:
+                try:
+                    await self.bot.sql.delete(table="reminders", id=reminder['id'])
+                    reminders_cog = self.bot.get_cog('Reminders')
+                    if reminders_cog and hasattr(reminders_cog, '_reminder_cache'):
+                        reminders_cog._reminder_cache.pop(reminder['id'], None)
+                except:
+                    pass
+        except:
+            pass
+    
+    @commands.Cog.listener()
+    async def on_guild_channel_delete(self, channel: discord.TextChannel):
+        """Manage reminders when a channel is deleted"""
+        try:
+            reminders = await self.bot.sql.find(
+                table="reminders",
+                where={"channel_id": channel.id, "reminded": False}
+            )
+            if not reminders:
+                return
+            system_channel = channel.guild.system_channel
+            if system_channel:
+                for reminder in reminders:
+                    try:
+                        await self.bot.sql.update(
+                            table="reminders",
+                            id=reminder['id'],
+                            data={"channel_id": system_channel.id}
+                        )
+                        reminders_cog = self.bot.get_cog('Reminders')
+                        if reminders_cog and hasattr(reminders_cog, '_reminder_cache'):
+                            if reminder['id'] in reminders_cog._reminder_cache:
+                                reminders_cog._reminder_cache[reminder['id']]['channel_id'] = system_channel.id
+                    except:
+                        pass
+            else:
+                for reminder in reminders:
+                    try:
+                        await self.bot.sql.delete(table="reminders", id=reminder['id'])
+                        reminders_cog = self.bot.get_cog('Reminders')
+                        if reminders_cog and hasattr(reminders_cog, '_reminder_cache'):
+                            reminders_cog._reminder_cache.pop(reminder['id'], None)
+                    except:
+                        pass
+        except:
+            pass
 
-async def setup(bot: KitBot):
+async def setup(bot: CommieBot):
     await bot.add_cog(Events(bot))

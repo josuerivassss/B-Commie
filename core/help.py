@@ -1,10 +1,10 @@
 import discord, pydash as _
 from core.ui.paginator import Paginator
-from core.kernel import KitBot, KitContext, Locale
+from core.kernel import CommieBot, CommieContext, Locale
 from discord.ext import commands
 from typing import List, Dict
 
-async def get_app_commands_from_cog(cog: str, cache_commands: List[discord.app_commands.AppCommand], bot: KitBot):
+async def get_app_commands_from_cog(cog: str, cache_commands: List[discord.app_commands.AppCommand], bot: CommieBot):
     cmds = bot.get_cog(cog).get_commands()
     filtered = filter(lambda c: _.find(cache_commands, lambda s: s.name == c.name), cmds)
     children = []
@@ -50,12 +50,12 @@ def parse_aliases(command: commands.HybridCommand):
         return f'{before + " " if before else ""}' + command.name
 
 class MenuHelpSelect(discord.ui.Select):
-    def __init__(self, *, ctx: KitContext, embed: discord.Embed, commands: List[discord.app_commands.AppCommand], locale: Locale):
+    def __init__(self, *, ctx: CommieContext, embed: discord.Embed, commands: List[discord.app_commands.AppCommand], locale: Locale):
         self.ctx = ctx
         self.embed = embed
         self.commands = commands
         self.locale = locale
-        self.bot: KitBot = self.ctx.bot
+        self.bot: CommieBot = self.ctx.bot
         cogs = list(map(lambda cog: cog[0], list(self.bot.cogs.items())))
         ops = []
         for cog in cogs:
@@ -83,7 +83,7 @@ class MenuHelpSelect(discord.ui.Select):
             pass
 
 class HelpView(discord.ui.View):
-    def __init__(self, *, timeout = 30, embed: discord.Embed, ctx: KitContext, commands: List[discord.app_commands.AppCommand], locale: Locale):
+    def __init__(self, *, timeout = 30, embed: discord.Embed, ctx: CommieContext, commands: List[discord.app_commands.AppCommand], locale: Locale):
         super().__init__(timeout=timeout)
         self.add_item(MenuHelpSelect(ctx=ctx, embed=embed, commands=commands, locale=locale))
         self.message: discord.Message = None
@@ -102,19 +102,19 @@ class HelpView(discord.ui.View):
 
         return self.ctx.author.id == interaction.user.id
 
-async def send_help(ctx: KitContext, slash, locale: Locale):
-    emb = discord.Embed(description=locale.get("help.intro", botname=ctx.bot.user.name, prefix=ctx.clean_prefix), colour=discord.Color.blurple())
+async def send_help(ctx: CommieContext, slash, locale: Locale):
+    emb = discord.Embed(description=locale.get("help.intro", botname=ctx.bot.user.name, prefix=ctx.clean_prefix), colour=discord.Color.dark_red())
     emb.set_author(name=f"@{ctx.author.global_name}", icon_url=ctx.author.display_avatar)
     emb.set_thumbnail(url=ctx.bot.user.display_avatar)
     emb.set_footer(text=locale.get("help.footer", prefix=ctx.clean_prefix), icon_url=ctx.bot.user.display_avatar)
     v = HelpView(embed=emb, ctx=ctx, commands=slash, locale=locale)
     v.message = await ctx.send(embed=emb, view=v)
 
-async def send_help_cog(ctx: KitContext, cog: str, slash: List[discord.app_commands.AppCommand], locale: Locale):
+async def send_help_cog(ctx: CommieContext, cog: str, slash: List[discord.app_commands.AppCommand], locale: Locale):
     cmds = await get_app_commands_from_cog(cog, slash, ctx.bot)
     mapped = map(lambda x: f'**{x["id"]}** : {x["description"]}', cmds)
     _chunk = _.chunk(list(mapped), 10)
-    emb = discord.Embed(title=f'{cog} [1/{len(_chunk)}]', colour=discord.Color.blurple(), description="\n".join(_chunk[0]))
+    emb = discord.Embed(title=f'{cog} [1/{len(_chunk)}]', colour=discord.Color.dark_red(), description="\n".join(_chunk[0]))
     emb.set_author(name=f"@{ctx.author.global_name}", icon_url=ctx.author.display_avatar)
     emb.set_footer(text=locale.get("help.footer", prefix=ctx.clean_prefix), icon_url=ctx.bot.user.display_avatar)
     def render(item, page, total):
@@ -123,23 +123,23 @@ async def send_help_cog(ctx: KitContext, cog: str, slash: List[discord.app_comma
     v = Paginator(data=_chunk, ctx=ctx, embed=emb, locale=locale, render=render)
     v.message = await ctx.send(embed=emb, view=v)
 
-async def send_help_group(ctx: KitContext, group: commands.HybridGroup, slash: List[discord.app_commands.AppCommand], locale: Locale):
+async def send_help_group(ctx: CommieContext, group: commands.HybridGroup, slash: List[discord.app_commands.AppCommand], locale: Locale):
     as_slash: discord.app_commands.AppCommand = _.find(slash, lambda x: x.name == group.name)
     subcmds = []
     for subcmd in as_slash.options:
         if subcmd.type == discord.AppCommandOptionType.subcommand:
             subcmds.append({ "id": f"</{as_slash.name} {subcmd.name}:{as_slash.id}>", "description": subcmd.description })
     mapped = list(map(lambda s: f'**{s["id"]}** : {s["description"]}', subcmds))
-    emb = discord.Embed(title=group.name, colour=discord.Color.blurple(), description=as_slash.description or locale.get("help.noDescription"))
+    emb = discord.Embed(title=group.name, colour=discord.Color.dark_red(), description=as_slash.description or locale.get("help.noDescription"))
     emb.set_author(name=f"@{ctx.author.global_name}", icon_url=ctx.author.display_avatar)
     emb.set_footer(text=locale.get("help.footer", prefix=ctx.clean_prefix), icon_url=ctx.bot.user.display_avatar)
     if len(mapped) != 0:
         emb.add_field(name=locale.get("help.subcommands"), value="\n".join(mapped))
     await ctx.send(embed=emb)
 
-async def send_help_command(ctx: KitContext, command: commands.HybridCommand, slash: List[discord.app_commands.AppCommand], locale: Locale):
+async def send_help_command(ctx: CommieContext, command: commands.HybridCommand, slash: List[discord.app_commands.AppCommand], locale: Locale):
     as_slash: discord.app_commands.AppCommand = _.find(slash, lambda x: x.name == command.name)
-    emb = discord.Embed(title=command.name, colour=discord.Color.blurple())
+    emb = discord.Embed(title=command.name, colour=discord.Color.dark_red())
     emb.set_author(name=f"@{ctx.author.global_name}", icon_url=ctx.author.display_avatar)
     emb.set_footer(text=f"@{ctx.bot.user.global_name}", icon_url=ctx.bot.user.display_avatar)
     if not command.app_command.parent:
