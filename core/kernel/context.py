@@ -31,7 +31,7 @@ class CommieContext(commands.Context):
         type: AnswerType = AnswerType.Error, 
         emoji: Union[bool | discord.Emoji] = True, 
         ephemeral: bool = True, 
-        deleteAfter: int = 0, 
+        deleteAfter: int = None, 
         bold: bool = True, 
         view: discord.ui.View | None = None,
         hint: str = None
@@ -66,11 +66,7 @@ class CommieContext(commands.Context):
         if hint:
             message = f"{message}\n-# {hint}"
         
-        sent = await self.send(message, ephemeral=ephemeral, view=view)
-        
-        if deleteAfter > 0:
-            await sent.delete(delay=deleteAfter)
-        
+        sent = await self.send(message, ephemeral=ephemeral, view=view, delete_after=deleteAfter)
         return sent
     
     async def render(self, template: str):

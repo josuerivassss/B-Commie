@@ -71,7 +71,7 @@ class Developer(commands.Cog):
         uptime = datetime.timedelta(milliseconds=(round(datetime.datetime.now().timestamp()) - round(self.bot.start_time.timestamp())) * 1000)
         embed = discord.Embed(colour=discord.Color.dark_red(), description="Here's my software specifications! " + CommieEmojis.Developer)
         embed.set_thumbnail(url=str(ctx.bot.user.display_avatar).replace(".webp", ".png"))
-        embed.add_field(name="Developer", value="@cofuefest", inline=True)
+        embed.add_field(name="Developer", value="@cofue", inline=True)
         embed.add_field(name="Server", value=len(ctx.bot.guilds), inline=True)
         embed.add_field(name="Users", value=len(ctx.bot.users), inline=True)
         embed.add_field(name="Commands", value=len(ctx.bot.commands), inline=True)
@@ -81,25 +81,6 @@ class Developer(commands.Cog):
         embed.add_field(name="Version", value="0.1.0", inline=True)
         embed.add_field(name="Python", value=sys.version.split(' ')[0], inline=True)
         embed.add_field(name="Platform", value=sys.platform, inline=True)
-        await ctx.send(embed=embed)
-    
-    @commands.hybrid_command(name="reminder-debug")
-    @commands.is_owner()
-    async def debug_reminders(self, ctx: CommieContext):
-        """Información de debug del sistema"""
-        cog = self.bot.get_cog('Reminders')
-        
-        embed = discord.Embed(title="🔧 Reminders Debug")
-        embed.add_field(name="Cache Size", value=len(cog._reminder_cache))
-        embed.add_field(name="Task Running", value=cog.check_reminders.is_running())
-        
-        # Total activos en DB
-        total = len(await self.bot.sql.find(
-            table="reminders",
-            where={"reminded": False}
-        ))
-        embed.add_field(name="Total Active (DB)", value=total)
-        
         await ctx.send(embed=embed)
 
 async def setup(bot: CommieBot):

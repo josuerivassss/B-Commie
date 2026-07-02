@@ -22,7 +22,8 @@
         "animated": "Animated",
         "nick": "Nickname",
         "defaultNick": "Default nickname",
-        "permissions": "Permissions"
+        "permissions": "Permissions",
+        "selectLanguage": "Select a language"
     },
     "utility": {
         "currencyConversion": "Currency conversion",
@@ -40,15 +41,13 @@
         "previous": "Previous",
         "next": "Next",
         "footer": "Page {page}/{total}",
-        "notForYou": "{user}, this paginator is not for you.",
         "delete": "Delete"
     },
     "confirmator": {
         "title": "Confirm the operation.",
         "confirm": "Confirm",
         "cancel": "Cancel",
-        "cancelled": "Cancelled operation.",
-        "notForYou": "{user}, this isn't your decision."
+        "cancelled": "Cancelled operation."
     },
     "help": {
         "intro": "Welcome to {botname} help menu! Use the buttons below to navigate through the different modules and commands available. You can also use {prefix}help <command> to get more information about a specific command.",
@@ -174,7 +173,8 @@
         "timeoutDurationInvalidHint": "Must be between 1 second and 28 days",
         "clearAmountInvalid": "The amount of messages to clear is invalid.",
         "clearAmountInvalidHint": "Must be between 1 and 100",
-        "userNotBanned": "This user is not banned."
+        "userNotBanned": "This user is not banned.",
+        "viewNotForYou": "This action is not for you."
     }, 
     "reminders": {
         "add": {

@@ -2,7 +2,6 @@ from discord.ext import commands
 from core.kernel import CommieBot, CommieContext
 from core.help import send_help_group
 import discord
-from typing import Literal
 
 """
 GUILDS TABLE

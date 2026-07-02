@@ -1,4 +1,5 @@
 from discord.ext import commands, tasks
+from core.help import send_help_group
 from core.kernel import CommieBot, CommieContext, CommieEmojis
 from core.ui.confirmator import Confirmator
 from typing import Optional
@@ -24,7 +25,9 @@ class Reminders(commands.Cog):
     @commands.hybrid_group(name="reminders", aliases=["reminder", "remind"])
     async def reminders(self, ctx: CommieContext):
         """Manage your reminders"""
-        pass
+        if ctx.invoked_subcommand is None:
+            cmd = self.bot.get_command("reminders")
+            await send_help_group(ctx, cmd, self.bot.slash_cache, await ctx.get_locale())
 
     async def cog_load(self):
         self.check_reminders.start()

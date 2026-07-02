@@ -21,10 +21,11 @@ This class is intended to live inside the core UI layer.
 
 from typing import Callable, Any
 from core.kernel import CommieContext, Locale
+from core.ui.base import BaseView
 import discord
 
 
-class Paginator(discord.ui.View):
+class Paginator(BaseView):
     def __init__(
         self,
         *,
@@ -35,35 +36,17 @@ class Paginator(discord.ui.View):
         render: Callable[[Any, int, int], None] | None = None,
         timeout: int = 30
     ):
-        super().__init__(timeout=timeout)
+        super().__init__(ctx=ctx, locale=locale, timeout=timeout)
         self.data = data
-        self.ctx = ctx
-        self.t = locale
         self.embed = embed
         self.render = render
         self.page: int = 0
-        self.message: discord.Message | None = None
         self.content: str | None = None
         self._apply_locale()
         if len(self.data) <= 1:
             for child in self.children:
                 if child.custom_id != "paginator_delete":
                     child.disabled = True
-
-    async def on_timeout(self):
-        for child in self.children:
-            child.disabled = True
-        if self.message:
-            await self.message.edit(view=self)
-
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if interaction.user.id != self.ctx.author.id:
-            await interaction.response.send_message(
-                self.t.get("paginator.notForYou", user=interaction.user.mention),
-                ephemeral=True
-            )
-            return False
-        return True
 
     def _apply_locale(self):
         for child in self.children:

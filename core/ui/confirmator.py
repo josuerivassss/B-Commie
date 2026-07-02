@@ -20,8 +20,9 @@ from typing import Callable, Awaitable
 import discord
 from core.kernel.context import CommieContext
 from core.kernel.locale import Locale
+from core.ui.base import BaseView
 
-class Confirmator(discord.ui.View):
+class Confirmator(BaseView):
     def __init__(
         self,
         *,
@@ -31,28 +32,10 @@ class Confirmator(discord.ui.View):
         on_cancel: Callable[[discord.Interaction], Awaitable[None]] | None = None,
         timeout: int = 30
     ):
-        super().__init__(timeout=timeout)
-        self.ctx = ctx
-        self.t = locale
+        super().__init__(ctx=ctx, locale=locale, timeout=timeout)
         self.on_confirm = on_confirm
         self.on_cancel = on_cancel
-        self.message: discord.Message | None = None
         self._apply_locale()
-
-    async def on_timeout(self):
-        for child in self.children:
-            child.disabled = True
-        if self.message:
-            await self.message.edit(view=self)
-
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if interaction.user.id != self.ctx.author.id:
-            await interaction.response.send_message(
-                self.t.get("confirmator.notForYou", user=interaction.user.mention),
-                ephemeral=True
-            )
-            return False
-        return True
 
     def _apply_locale(self):
         for child in self.children:
@@ -61,13 +44,6 @@ class Confirmator(discord.ui.View):
                     child.label = self.t.get("confirmator.cancel")
                 elif child.custom_id == "confirm_confirm":
                     child.label = self.t.get("confirmator.confirm")
-
-    async def _finalize(self):
-        for child in self.children:
-            child.disabled = True
-        if self.message:
-            await self.message.edit(view=self)
-        self.stop()
 
     @discord.ui.button(
         label="Cancel",

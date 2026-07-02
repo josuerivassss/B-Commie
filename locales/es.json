@@ -22,7 +22,8 @@
         "animated": "Animado",
         "nick": "Apodo",
         "defaultNick": "Apodo predeterminado",
-        "permissions": "Permisos"
+        "permissions": "Permisos",
+        "selectLanguage": "Selecciona un idioma"
     },
     "utility": {
         "currencyConversion": "Conversión de divisas",
@@ -40,15 +41,13 @@
         "previous": "Anterior",
         "next": "Siguiente",
         "footer": "Página {page}/{total}",
-        "notForYou": "{user}, este paginador no es para ti.",
         "delete": "Eliminar"
     },
     "confirmator": {
         "title": "Confirma la operación.",
         "confirm": "Confirmar",
         "cancel": "Cancelar",
-        "cancelled": "Operación cancelada.",
-        "notForYou": "{user}, esta no es tu decisión."
+        "cancelled": "Operación cancelada."
     },
     "help": {
         "intro": "¡Bienvenido al menú de ayuda de {botname}! Usa los botones de abajo para navegar por los diferentes módulos y comandos disponibles. También puedes usar {prefix}help <comando> para obtener más información sobre un comando específico.",
@@ -174,7 +173,8 @@
         "timeoutDurationInvalidHint": "Debe estar entre 1 segundo y 28 días",
         "clearAmountInvalid": "La cantidad de mensajes a eliminar es inválida.",
         "clearAmountInvalidHint": "Debe estar entre 1 y 100",
-        "userNotBanned": "Este usuario no está baneado."
+        "userNotBanned": "Este usuario no está baneado.",
+        "viewNotForYou": "Esta acción no es para ti."
     },
     "reminders": {
         "add": {
